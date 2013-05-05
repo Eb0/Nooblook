@@ -54,6 +54,8 @@ BBLog.handle("add.plugin", {
         // }],
     ],
 
+    difficultyColors : ['#797979', '#c7da46', '#dad846', '#dab546', '#da8146', '#da6246', '#da4646'],
+
     /**
      * Initialization routines for nooblooker
      * @param  {object} instance The instance of plugin
@@ -64,6 +66,7 @@ BBLog.handle("add.plugin", {
         console.log('Nooblooker is loaded');
 
         instance.cacheOwnSkill( instance );
+        instance.setServerDifficultyScale();
     },
 
     /**
@@ -79,13 +82,17 @@ BBLog.handle("add.plugin", {
         var players = new Array();
         var levels = new Array();
         var serverLevels = new Array();
-            
+
+        //var difficultyColors = ['#797979', '#c7da46', '#dad846', '#dab546', '#da8146', '#da6246', '#da4646'];            
 
         /**
          * Get the previously selected server GUID so we can compare it and skip duplicate queries
          * @type {string}
          */
         oldSelectedServerId = instance.cache('selectedServerId');
+
+
+
 
         /**
          * The domNode holding the row for server info in serverlist.
@@ -334,36 +341,7 @@ BBLog.handle("add.plugin", {
         return skill;
     },
 
-    /**
-     * calcBackgroundColor calculates a fluid range of colors for the comparison indicator.
-     * However, I found that the differences were too suttle and it didn't properly steer
-     * the desire to join a server that was a little bit over your head vs. WAY over your head.
-     * So I ended up disabling it and creating a rank staircase type of thingy with getBackgroundColor
-     */
-    // calcBackgroundColor : function ( instance, ownRank, avgLevel ) {
-    //     var ratio = avgLevel / ownRank;
-    //     var topValue = 220;
-    //     var minValue = 0;
-    //     var red = minValue;
-    //     var green = minValue;
-    //     var blue = minValue;
 
-    //     if ( ratio < 1 ) {
-    //         green = topValue;
-    //         red += Math.round((topValue - minValue) * ratio);
-    //     } else {
-    //         red = topValue;
-    //         green += Math.round((topValue - minValue) * (1 / ratio));
-    //     }
-    //     colors = {
-    //         red: red,
-    //         green: green,
-    //         blue: blue
-    //     }
-    //     console.log(colors);
-    //     return 'rgb('+red+','+green+','+blue+')';
-    // },
-    // 
     
     /**
      * Returns a given color for the comparison indicator based on rank ranges. If the server's rank is 
@@ -409,21 +387,27 @@ BBLog.handle("add.plugin", {
         var treshold = 100;
         var color;
         if ( avgLevel <= (ownLevel - treshold * 3) ) {
-            color = '#797979';
+            color = instance.difficultyColors[0];
         } else if (avgLevel > (ownLevel - treshold * 3) && avgLevel <= (ownLevel - treshold) ) {
-            color = '#c7da46';
+            color = instance.difficultyColors[1];
         } else if ( avgLevel > (ownLevel - treshold) && avgLevel <= (ownLevel) ) {
-            color = '#dad846';
+            color = instance.difficultyColors[2];
         } else if ( avgLevel > (ownLevel) && avgLevel <= (ownLevel + treshold) ) {
-            color = '#dab546';
+            color = instance.difficultyColors[3];
         } else if ( avgLevel > (ownLevel + treshold) && avgLevel <= (ownLevel + treshold * 2) ) {
-            color = '#da8146';
+            color = instance.difficultyColors[4];
         } else if ( avgLevel > (ownLevel + treshold * 2) && avgLevel <= (ownLevel + treshold * 3) ) {
-            color = '#da6246';
+            color = instance.difficultyColors[5];
         } else if ( avgLevel > (ownLevel + treshold * 4) ) {
-            color = '#da4646';
+            color = instance.difficultyColors[6];
         }
 
         return color;
     },
+
+    setServerDifficultyScale : function(){
+
+        var $serverDifficultyScale = $("#serverinfo-scoreboard");
+        $serverDifficultyScale.append('<div id="serverDifficultyScale">serverDifficultyScale</div>');
+    }
 });
